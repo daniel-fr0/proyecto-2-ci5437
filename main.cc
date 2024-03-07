@@ -39,10 +39,96 @@ hash_table_t TTable[2];
 //int maxmin(state_t state, int depth, bool use_tt);
 //int minmax(state_t state, int depth, bool use_tt = false);
 //int maxmin(state_t state, int depth, bool use_tt = false);
-int negamax(state_t state, int depth, int color, bool use_tt = false);
-int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false);
-int scout(state_t state, int depth, int color, bool use_tt = false);
-int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false);
+int negamax(state_t state, int depth, int color, bool use_tt = false){
+    if(depth == 0 || state.terminal()){
+        return color * state.value();
+    }
+
+    int alpha = -INT64_MAX;
+    //foreach child of node
+        alpha = max(alpha,-negamax(child,depth -1,-color,use_tt));
+    //}
+    return alpha;
+};
+
+int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false){
+    if(depth == 0 || state.terminal()){
+        return color * state.value();
+    }
+    int score = -INT64_MAX;
+    //foreach child of state
+        int val = -negamax(child,depth - 1,-beta,-alpha,-color);
+        score = max(score,val);
+        alpha = max(alpha,val);
+        if (alpha >= beta){break;}
+    return score;
+};
+
+bool test(state_t state, int depth, int score, string condition){
+    if (depth == 0 || state.terminal()){
+        if(condition == ">"){
+            return state.value() > score;
+        }else{
+            return state.value() >= score;
+        }
+    }
+    //foreach child of node
+        if(condition == ">"){
+            if (state.is_black(state.pos()) && test(child,depth-1,score,">")){
+                return true;
+            }
+            if (state.is_white(state.pos()) && !test(child,depth-1,score,">")){
+                return false;
+            } 
+        }else{
+            if (state.is_black(state.pos()) && test(child,depth-1,score,">=")){
+                return true;
+            }
+            if (state.is_white(state.pos()) && !test(child,depth-1,score,">=")){
+                return false;
+            } 
+        }
+    return !state.is_black(state.pos());      
+}
+
+int scout(state_t state, int depth, bool use_tt = false){
+    if (depth == 0 || state.terminal()){
+        return state.value();
+    }
+    int score = 0;
+    //foreach child of node
+        //if (child is first child){
+        //    score = scout(child,depth - 1 ,use_tt);
+        //}
+        //else
+            if(state.is_black(state.pos()) && test(child,depth,score,">")){
+                score = scout(child,depth - 1);
+            }
+            if(state.is_white(state.pos()) && !test(child,depth,score,">=")){
+                score = scout(child,depth - 1);
+            }
+    return score;
+};
+
+int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false){
+    if (depth == 0 || state.terminal()){
+        return color * state.value();
+    }
+    int score = 0;
+    //foreach child of node
+        // if (child is first child)
+            score = -negascout(child,depth-1,-beta,-alpha,-color);
+        //else
+            score = -negascout(child,depth-1,-alpha-1,-alpha,-color);
+            if (alpha < score && score < beta){
+                score = -negascout(child,depth-1,-beta,-score,-color);
+            }
+        alpha = max(alpha,score);
+        if(alpha >= beta){
+            break;
+        }
+    return alpha;
+};
 
 int main(int argc, const char **argv) {
     state_t pv[128];
@@ -94,10 +180,9 @@ int main(int argc, const char **argv) {
         expanded = 0;
         generated = 0;
         int color = i % 2 == 1 ? 1 : -1;
-
         try {
             if( algorithm == 1 ) {
-                //value = negamax(pv[i], 0, color, use_tt);
+                value = negamax(pv[i], 0, color, use_tt);
             } else if( algorithm == 2 ) {
                 //value = negamax(pv[i], 0, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
