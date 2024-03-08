@@ -136,6 +136,17 @@ class state_t {
         return valid_moves.empty() ? -1 : valid_moves[lrand48() % valid_moves.size()];
     }
 
+    // Se agrega esta funcion para no tener movimientos randoms, si no en orden.
+    vector<int> movs_posibles(bool player) {
+        vector<int> movimientos;
+        for (int pos = 0; pos < DIM; ++pos ) { 
+            if ( (player && is_black_move(pos)) || (!player && is_white_move(pos))) {
+                movimientos.push_back(pos);
+            }
+        }
+        return movimientos;
+    }
+
     bool operator<(const state_t &s) const {
         return (free_ < s.free_) || ((free_ == s.free_) && (pos_ < s.pos_));
     }
@@ -224,7 +235,7 @@ inline bool state_t::outflank(bool color, int pos) const {
     }
 
 
-    assert(0);
+    //assert(0);
 
     return false;
 }

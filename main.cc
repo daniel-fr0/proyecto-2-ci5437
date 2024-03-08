@@ -40,84 +40,172 @@ hash_table_t TTable[2];
 //int minmax(state_t state, int depth, bool use_tt = false);
 //int maxmin(state_t state, int depth, bool use_tt = false);
 int negamax(state_t state, int depth, int color, bool use_tt = false){
-    if(depth == 0 || state.terminal()){
+    generated++;
+    if (depth==0 || state.terminal()) {
         return color * state.value();
+    };
+    // Inicializamos el alpha y una variable para saber si esta jugando white o black
+    int alpha = -1000000000;
+    bool actual;
+    if(color == 1){
+        actual = true;
+    }else{
+        actual = false;
     }
-
-    int alpha = -INT64_MAX;
-    //foreach child of node
-        alpha = max(alpha,-negamax(child,depth -1,-color,use_tt));
-    //}
+    // Childs tendra los nodos hijos del nodo state que estamos revisando
+    vector<int> childs = state.movs_posibles(actual);
+    // Si el state tiene hijos que falten revisar
+    if (!childs.empty()) { 
+        for (int posicion : childs) {
+            expanded++;
+            // Generamos el siguiente estado en el arreglo
+            state_t child = state.move(actual,posicion);
+            // Se calcula el alpha
+            alpha = max(alpha,-negamax(child,depth-1,-color,use_tt=false));
+        };
+    }
+    // Si no tiene, tomamos el alpha actual
+    else {
+        alpha = max(alpha,-negamax(state,depth-1,-color,use_tt=false));        
+    }
     return alpha;
 };
 
 int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false){
-    if(depth == 0 || state.terminal()){
+    generated++;  
+    if (depth==0 || state.terminal()) {
         return color * state.value();
+    };  
+    // Inicializamos el alpha y una variable para saber si esta jugando white o black
+    int score = -1000000000;
+    bool actual;
+    if(color == 1){
+        actual = true;
+    }else{
+        actual = false;
     }
-    int score = -INT64_MAX;
-    //foreach child of state
-        int val = -negamax(child,depth - 1,-beta,-alpha,-color);
+    // Childs tendra los nodos hijos del nodo state que estamos revisando
+    vector<int> childs = state.movs_posibles(actual);
+    // Si el state tiene hijos que falten revisar
+    if (!childs.empty()) { 
+        for (int posicion : childs) {
+            expanded++;     
+            // Generamos el siguiente estado en el arreglo
+            state_t child = state.move(actual,posicion);
+            // Se calcula el alpha
+            int val = -negamax(child,depth-1,-beta,-alpha,-color,use_tt=false);
+            score = max(score,val);
+            alpha = max(alpha,val);
+            if (alpha >= beta) {
+                break;
+            }
+        };
+    } 
+    // Si no tiene, tomamos el score actual 
+    else {
+        int val = -negamax(state,depth-1,-beta,-alpha,-color,use_tt=false);
         score = max(score,val);
-        alpha = max(alpha,val);
-        if (alpha >= beta){break;}
+    }
     return score;
 };
 
-bool test(state_t state, int depth, int score, string condition){
-    if (depth == 0 || state.terminal()){
-        if(condition == ">"){
+bool test(state_t state, int depth, int score, int color,string condition){
+    if (depth == 0 || state.terminal()) {
+        if (condition == ">") {
             return state.value() > score;
         }else{
             return state.value() >= score;
         }
     }
-    //foreach child of node
-        if(condition == ">"){
-            if (state.is_black(state.pos()) && test(child,depth-1,score,">")){
+    // Incializamos una variable para saber si esta jugando white o black
+    bool actual;
+    if(color == 1){
+        actual = true;
+    }else{
+        actual = false;
+    }
+    // Childs tendra los nodos hijos del nodo state que estamos revisando
+    vector<int> childs = state.movs_posibles(actual);
+    // Si el state tiene hijos que falten revisar
+    if (!childs.empty()) { 
+        for (int posicion : childs) {
+            expanded++;
+            // Generamos el siguiente estado en el arreglo
+            state_t state_movement = state.move(actual,posicion);
+            // Hacemos el test del subarbol
+            if (actual && test(state_movement,depth-1,-color,score,condition)) {
                 return true;
             }
-            if (state.is_white(state.pos()) && !test(child,depth-1,score,">")){
+            if (!actual && !test(state_movement,depth-1,-color,score,condition)) {
                 return false;
-            } 
-        }else{
-            if (state.is_black(state.pos()) && test(child,depth-1,score,">=")){
-                return true;
-            }
-            if (state.is_white(state.pos()) && !test(child,depth-1,score,">=")){
-                return false;
-            } 
+            }            
+        };
+    }
+    
+    // Si no tiene, tomamos el resultado del test al estado actual actual 
+    else {
+        if (actual && test(state,depth-1,-color,score,condition)) {
+            return true;
         }
-    return !state.is_black(state.pos());      
+        if (!actual && !test(state,depth-1,-color,score,condition)) {
+            return false;
+        }
+    }
+    return actual ? false : true;
 }
 
-int scout(state_t state, int depth, bool use_tt = false){
-    if (depth == 0 || state.terminal()){
+int scout(state_t state, int depth, int color, bool use_tt = false){
+    generated++;
+    bool first_child = true;
+    if (depth == 0 || state.terminal()) {
         return state.value();
-    }
+    };
+    // Incializamos el score
     int score = 0;
-    //foreach child of node
-        //if (child is first child){
-        //    score = scout(child,depth - 1 ,use_tt);
-        //}
-        //else
-            if(state.is_black(state.pos()) && test(child,depth,score,">")){
-                score = scout(child,depth - 1);
+    // Incializamos una variable para saber si esta jugando white o black
+    bool actual;
+    if(color == 1){
+        actual = true;
+    }else{
+        actual = false;
+    } 
+    // Childs tendra los nodos hijos del nodo state que estamos revisando
+    vector<int> childs = state.movs_posibles(actual);
+    // Si el state tiene hijos que falten revisar
+    if (!childs.empty()) { 
+        for (int posicion : childs) {
+            expanded++;
+            // Generamos el siguiente estado en el arreglo
+            state_t state_movement = state.move(actual,posicion);
+            if (first_child) {
+                first_child = false;
+                score = scout(state_movement,depth-1,-color,false);
             }
-            if(state.is_white(state.pos()) && !test(child,depth,score,">=")){
-                score = scout(child,depth - 1);
-            }
+            else {
+                if (actual && test(state_movement,depth-1,score,-color,">")) {
+                    score = scout(state_movement,depth-1,-color,false);
+                }
+                if (!actual && !test(state_movement,depth-1,score,-color,">=")) {
+                    score = scout(state_movement,depth-1,-color,false);
+                }
+            }            
+        };
+    } 
+    // Si no tiene, tomamos el score actual 
+    else {
+        score = scout(state,depth-1,-color,false);
+    }
     return score;
 };
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false){
-    if (depth == 0 || state.terminal()){
+    /*if (depth == 0 || state.terminal()){
         return color * state.value();
     }
     int score = 0;
     //foreach child of node
         // if (child is first child)
-            score = -negascout(child,depth-1,-beta,-alpha,-color);
+            /*score = -negascout(child,depth-1,-beta,-alpha,-color);
         //else
             score = -negascout(child,depth-1,-alpha-1,-alpha,-color);
             if (alpha < score && score < beta){
@@ -126,7 +214,51 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
         alpha = max(alpha,score);
         if(alpha >= beta){
             break;
-        }
+        }*/
+    //return alpha;
+
+    generated++;
+    bool first_child = true;
+    if (depth == 0 || state.terminal()) {
+        return color * state.value();
+    };
+    // Incializamos el score
+    int score = 0;
+    // Incializamos una variable para saber si esta jugando white o black
+    bool actual;
+    if(color == 1){
+        actual = true;
+    }else{
+        actual = false;
+    } 
+    // Childs tendra los nodos hijos del nodo state que estamos revisando
+    vector<int> childs = state.movs_posibles(actual);
+    // Si el state tiene hijos que falten revisar
+    if (!childs.empty()) { 
+        for (int posicion : childs) {
+            expanded++;
+            // Generamos el siguiente estado en el arreglo
+            state_t state_movement = state.move(actual,posicion);
+            if (first_child) {
+                first_child = false;
+                score = -negascout(state_movement,depth-1,-beta,-alpha,-color,false);
+            }
+            else {
+                score = -negascout(state_movement,depth-1,-alpha-1,-alpha,-color,false);
+                if (alpha < score && score < beta) {
+                    score = -negascout(state_movement,depth-1,-beta,-score,-color,false);
+                }
+            } 
+            alpha = max(alpha,score);
+            if (alpha >= beta) {
+                break;
+            };
+        };
+    }
+    // Si no tiene, tomamos el alpha actual 
+    else {
+        alpha = -negascout(state,depth-1,-beta,-alpha,-color,false);
+    }
     return alpha;
 };
 
@@ -182,13 +314,13 @@ int main(int argc, const char **argv) {
         int color = i % 2 == 1 ? 1 : -1;
         try {
             if( algorithm == 1 ) {
-                value = negamax(pv[i], 0, color, use_tt);
+                value = negamax(pv[i], 33, color, use_tt);
             } else if( algorithm == 2 ) {
-                //value = negamax(pv[i], 0, -200, 200, color, use_tt);
+                value = negamax(pv[i], 33, -200, 200, color, use_tt);
             } else if( algorithm == 3 ) {
-                //value = scout(pv[i], 0, color, use_tt);
+                value = scout(pv[i], 33, color, use_tt);
             } else if( algorithm == 4 ) {
-                //value = negascout(pv[i], 0, -200, 200, color, use_tt);
+                value = negascout(pv[i], 33, -200, 200, color, use_tt);
             }
         } catch( const bad_alloc &e ) {
             cout << "size TT[0]: size=" << TTable[0].size() << ", #buckets=" << TTable[0].bucket_count() << endl;
