@@ -122,10 +122,10 @@ bool test(state_t state, int depth, int score, int color,string condition){
             // Generamos el siguiente estado en el arreglo
             state_t state_movement = state.move(actual,posicion);
             // Hacemos el test del subarbol
-            if (actual && test(state_movement,depth-1,-color,score,condition)) {
+            if (actual && test(state_movement,depth-1,score,-color,condition)) {
                 return true;
             }
-            if (!actual && !test(state_movement,depth-1,-color,score,condition)) {
+            if (!actual && !test(state_movement,depth-1,score,-color,condition)) {
                 return false;
             }            
         };
@@ -133,17 +133,17 @@ bool test(state_t state, int depth, int score, int color,string condition){
     
     // Si no tiene, tomamos el resultado del test al estado actual actual 
     else {
-        if (actual && test(state,depth-1,-color,score,condition)) {
+        if (actual && test(state,depth-1,score,-color,condition)) {
             return true;
         }
-        if (!actual && !test(state,depth-1,-color,score,condition)) {
+        if (!actual && !test(state,depth-1,score,-color,condition)) {
             return false;
         }
     }
     return !actual;
 }
 
-int scout(state_t state, int depth, int color, bool use_tt = false){
+int scoutRec(state_t state, int depth, int color, bool use_tt){
     generated++;
     bool first_child = true;
     if (depth == 0 || state.terminal()) {
@@ -154,32 +154,36 @@ int scout(state_t state, int depth, int color, bool use_tt = false){
     // Incializamos una variable para saber si esta jugando white o black
     bool actual = color == 1; 
     // Childs tendra los nodos hijos del nodo state que estamos revisando
-    vector<int> childs = state.movs_posibles(actual);
+    vector<int> movimientos = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
-    if (!childs.empty()) { 
-        for (int posicion : childs) {
+    if (!movimientos.empty()) { 
+        for (int posicion : movimientos) {
             expanded++;
             // Generamos el siguiente estado en el arreglo
-            state_t state_movement = state.move(actual,posicion);
+            state_t child = state.move(actual,posicion);
             if (first_child) {
                 first_child = false;
-                score = scout(state_movement,depth-1,-color,use_tt);
-            }
+                score = scoutRec(child, depth-1, -color, use_tt);
+            } 
             else {
-                if (actual && test(state_movement,depth,score,-color,">")) {
-                    score = scout(state_movement,depth-1,-color,use_tt);
+                if (actual && test(child, depth, score, -color, ">")){
+                    score = scoutRec(child, depth-1, -color, use_tt);
                 }
-                if (!actual && !test(state_movement,depth,score,-color,">=")) {
-                    score = scout(state_movement,depth-1,-color,use_tt);
+                if (!actual && !test(child, depth, score,-color,  ">=")){
+                    score = scoutRec(child, depth-1, -color, use_tt);
                 }
             }            
         };
     } 
     // Si no tiene, tomamos el score actual 
     else {
-        score = scout(state,depth-1,-color,use_tt);
+        score = scoutRec(state,depth-1,-color,use_tt);
     }
     return score;
+};
+
+int scout(state_t state, int depth, int color, bool use_tt = false){
+    return color * scoutRec(state, depth, color, use_tt);
 };
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false){
@@ -193,21 +197,21 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     // Incializamos una variable para saber si esta jugando white o black
     bool actual = color == 1; 
     // Childs tendra los nodos hijos del nodo state que estamos revisando
-    vector<int> childs = state.movs_posibles(actual);
+    vector<int> movimientos = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
-    if (!childs.empty()) { 
-        for (int posicion : childs) {
+    if (!movimientos.empty()) { 
+        for (int posicion : movimientos) {
             expanded++;
             // Generamos el siguiente estado en el arreglo
-            state_t state_movement = state.move(actual,posicion);
+            state_t child = state.move(actual,posicion);
             if (first_child) {
                 first_child = false;
-                score = -negascout(state_movement,depth-1,-beta,-alpha,-color,use_tt);
+                score = -negascout(child,depth-1,-beta,-alpha,-color,use_tt);
             }
             else {
-                score = -negascout(state_movement,depth-1,-alpha-1,-alpha,-color,use_tt);
+                score = -negascout(child,depth-1,-alpha-1,-alpha,-color,use_tt);
                 if (alpha < score && score < beta) {
-                    score = -negascout(state_movement,depth-1,-beta,-score,-color,use_tt);
+                    score = -negascout(child,depth-1,-beta,-score,-color,use_tt);
                 }
             } 
             alpha = max(alpha,score);
