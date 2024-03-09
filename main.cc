@@ -8,6 +8,10 @@
 #include <limits>
 #include "othello_cut.h" // won't work correctly until .h is fixed!
 #include "utils.h"
+#include <limits>
+
+const int INFINITY = std::numeric_limits<int>::max();
+const int NEGATIVE_INFINITY = std::numeric_limits<int>::min();
 
 #include <unordered_map>
 
@@ -45,13 +49,8 @@ int negamax(state_t state, int depth, int color, bool use_tt = false){
         return color * state.value();
     };
     // Inicializamos el alpha y una variable para saber si esta jugando white o black
-    int alpha = -1000000000;
-    bool actual;
-    if(color == 1){
-        actual = true;
-    }else{
-        actual = false;
-    }
+    int alpha = NEGATIVE_INFINITY;
+    bool actual = color == 1;
     // Childs tendra los nodos hijos del nodo state que estamos revisando
     vector<int> childs = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
@@ -64,7 +63,7 @@ int negamax(state_t state, int depth, int color, bool use_tt = false){
             alpha = max(alpha,-negamax(child,depth-1,-color,use_tt=false));
         };
     }
-    // Si no tiene, tomamos el alpha actual
+    // Si no tiene movimientos, se pasa el turno, se pasa al siguiente estado (depth-1)
     else {
         alpha = max(alpha,-negamax(state,depth-1,-color,use_tt=false));        
     }
@@ -77,13 +76,8 @@ int negamax(state_t state, int depth, int alpha, int beta, int color, bool use_t
         return color * state.value();
     };  
     // Inicializamos el alpha y una variable para saber si esta jugando white o black
-    int score = -1000000000;
-    bool actual;
-    if(color == 1){
-        actual = true;
-    }else{
-        actual = false;
-    }
+    int score = NEGATIVE_INFINITY;
+    bool actual = color == 1;
     // Childs tendra los nodos hijos del nodo state que estamos revisando
     vector<int> childs = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
@@ -118,12 +112,7 @@ bool test(state_t state, int depth, int score, int color,string condition){
         }
     }
     // Incializamos una variable para saber si esta jugando white o black
-    bool actual;
-    if(color == 1){
-        actual = true;
-    }else{
-        actual = false;
-    }
+    bool actual = color == 1;
     // Childs tendra los nodos hijos del nodo state que estamos revisando
     vector<int> childs = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
@@ -151,7 +140,7 @@ bool test(state_t state, int depth, int score, int color,string condition){
             return false;
         }
     }
-    return actual ? false : true;
+    return !actual;
 }
 
 int scout(state_t state, int depth, int color, bool use_tt = false){
@@ -163,12 +152,7 @@ int scout(state_t state, int depth, int color, bool use_tt = false){
     // Incializamos el score
     int score = 0;
     // Incializamos una variable para saber si esta jugando white o black
-    bool actual;
-    if(color == 1){
-        actual = true;
-    }else{
-        actual = false;
-    } 
+    bool actual = color == 1; 
     // Childs tendra los nodos hijos del nodo state que estamos revisando
     vector<int> childs = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
@@ -179,44 +163,26 @@ int scout(state_t state, int depth, int color, bool use_tt = false){
             state_t state_movement = state.move(actual,posicion);
             if (first_child) {
                 first_child = false;
-                score = scout(state_movement,depth-1,-color,false);
+                score = scout(state_movement,depth-1,-color,use_tt);
             }
             else {
-                if (actual && test(state_movement,depth-1,score,-color,">")) {
-                    score = scout(state_movement,depth-1,-color,false);
+                if (actual && test(state_movement,depth,score,-color,">")) {
+                    score = scout(state_movement,depth-1,-color,use_tt);
                 }
-                if (!actual && !test(state_movement,depth-1,score,-color,">=")) {
-                    score = scout(state_movement,depth-1,-color,false);
+                if (!actual && !test(state_movement,depth,score,-color,">=")) {
+                    score = scout(state_movement,depth-1,-color,use_tt);
                 }
             }            
         };
     } 
     // Si no tiene, tomamos el score actual 
     else {
-        score = scout(state,depth-1,-color,false);
+        score = scout(state,depth-1,-color,use_tt);
     }
     return score;
 };
 
 int negascout(state_t state, int depth, int alpha, int beta, int color, bool use_tt = false){
-    /*if (depth == 0 || state.terminal()){
-        return color * state.value();
-    }
-    int score = 0;
-    //foreach child of node
-        // if (child is first child)
-            /*score = -negascout(child,depth-1,-beta,-alpha,-color);
-        //else
-            score = -negascout(child,depth-1,-alpha-1,-alpha,-color);
-            if (alpha < score && score < beta){
-                score = -negascout(child,depth-1,-beta,-score,-color);
-            }
-        alpha = max(alpha,score);
-        if(alpha >= beta){
-            break;
-        }*/
-    //return alpha;
-
     generated++;
     bool first_child = true;
     if (depth == 0 || state.terminal()) {
@@ -225,12 +191,7 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     // Incializamos el score
     int score = 0;
     // Incializamos una variable para saber si esta jugando white o black
-    bool actual;
-    if(color == 1){
-        actual = true;
-    }else{
-        actual = false;
-    } 
+    bool actual = color == 1; 
     // Childs tendra los nodos hijos del nodo state que estamos revisando
     vector<int> childs = state.movs_posibles(actual);
     // Si el state tiene hijos que falten revisar
@@ -241,12 +202,12 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
             state_t state_movement = state.move(actual,posicion);
             if (first_child) {
                 first_child = false;
-                score = -negascout(state_movement,depth-1,-beta,-alpha,-color,false);
+                score = -negascout(state_movement,depth-1,-beta,-alpha,-color,use_tt);
             }
             else {
-                score = -negascout(state_movement,depth-1,-alpha-1,-alpha,-color,false);
+                score = -negascout(state_movement,depth-1,-alpha-1,-alpha,-color,use_tt);
                 if (alpha < score && score < beta) {
-                    score = -negascout(state_movement,depth-1,-beta,-score,-color,false);
+                    score = -negascout(state_movement,depth-1,-beta,-score,-color,use_tt);
                 }
             } 
             alpha = max(alpha,score);
@@ -257,7 +218,7 @@ int negascout(state_t state, int depth, int alpha, int beta, int color, bool use
     }
     // Si no tiene, tomamos el alpha actual 
     else {
-        alpha = -negascout(state,depth-1,-beta,-alpha,-color,false);
+        alpha = -negascout(state,depth-1,-beta,-alpha,-color,use_tt);
     }
     return alpha;
 };
