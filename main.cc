@@ -267,7 +267,11 @@ int main(int argc, const char **argv) {
     cout << (use_tt ? " w/ transposition table" : "") << endl;
 
     // Run algorithm along PV (bacwards)
-    cout << "Moving along PV:" << endl;
+    cout << "Moving along PV:\n" << endl;
+
+    cout << "| Starting Depth | Move | Value | #Expanded | #Generated | Seconds | #Generated/Second |" << endl;
+    cout << "| -------------- | ---- | ----- | --------- | ---------- | ------- | ----------------- |" << endl;
+
     for( int i = 0; i <= npv; ++i ) {
         //cout << pv[i];
         int value = 0;
@@ -294,13 +298,12 @@ int main(int argc, const char **argv) {
         }
 
         float elapsed_time = Utils::read_time_in_seconds() - start_time;
-
-        cout << npv + 1 - i << ". " << (color == 1 ? "Black" : "White") << " moves: "
-             << "value=" << color * value
-             << ", #expanded=" << expanded
-             << ", #generated=" << generated
-             << ", seconds=" << elapsed_time
-             << ", #generated/second=" << generated/elapsed_time
+        cout << "| " << npv + 1 - i << " | " << (color == 1 ? "Black" : "White") << " moves"
+             << " | " << color * value
+             << " | " << expanded
+             << " | " << generated
+             << " | " << elapsed_time
+             << " | " << generated/elapsed_time << " | "
              << endl;
     }
 

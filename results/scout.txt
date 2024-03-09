@@ -1,27 +1,26 @@
-Extracting principal variation (PV) with 33 plays ... done!
-Algorithm: Scout
-Moving along PV:
-34. White moves: value=-4, #expanded=0, #generated=1, seconds=1.00001e-06, #generated/second=999992
-33. Black moves: value=-4, #expanded=1, #generated=2, seconds=1.00001e-06, #generated/second=1.99998e+06
-32. White moves: value=-4, #expanded=4, #generated=3, seconds=2.00002e-06, #generated/second=1.49999e+06
-31. Black moves: value=-4, #expanded=4, #generated=4, seconds=2.00002e-06, #generated/second=1.99998e+06
-30. White moves: value=-4, #expanded=15, #generated=11, seconds=5.00004e-06, #generated/second=2.19998e+06
-29. Black moves: value=-4, #expanded=16, #generated=12, seconds=4.00003e-06, #generated/second=2.99998e+06
-28. White moves: value=-4, #expanded=27, #generated=13, seconds=7.99994e-06, #generated/second=1.62501e+06
-27. Black moves: value=-4, #expanded=73, #generated=14, seconds=2e-05, #generated/second=699999
-26. White moves: value=-4, #expanded=343, #generated=52, seconds=9.4e-05, #generated/second=553191
-25. Black moves: value=-4, #expanded=1548, #generated=192, seconds=0.000399, #generated/second=481203
-24. White moves: value=-4, #expanded=2302, #generated=249, seconds=0.00059, #generated/second=422034
-23. Black moves: value=-4, #expanded=3650, #generated=306, seconds=0.001014, #generated/second=301775
-22. White moves: value=-4, #expanded=11601, #generated=727, seconds=0.003146, #generated/second=231087
-21. Black moves: value=-4, #expanded=48013, #generated=1909, seconds=0.013593, #generated/second=140440
-20. White moves: value=-4, #expanded=78294, #generated=2250, seconds=0.021392, #generated/second=105180
-19. Black moves: value=-4, #expanded=178362, #generated=2692, seconds=0.048528, #generated/second=55473.1
-18. White moves: value=-4, #expanded=573183, #generated=6294, seconds=0.158203, #generated/second=39784.3
-17. Black moves: value=-4, #expanded=1049780, #generated=7155, seconds=0.285375, #generated/second=25072.3
-16. White moves: value=-4, #expanded=7198650, #generated=43606, seconds=1.95618, #generated/second=22291.3
-15. Black moves: value=-4, #expanded=27913174, #generated=91903, seconds=7.39237, #generated/second=12432.1
-14. White moves: value=-4, #expanded=67478633, #generated=136919, seconds=17.5808, #generated/second=7787.98
-13. Black moves: value=-4, #expanded=252021206, #generated=295252, seconds=63.552, #generated/second=4645.83
-12. White moves: value=-4, #expanded=645683085, #generated=888835, seconds=165.241, #generated/second=5379.02
-11. Black moves: value=-4, #expanded=3747761699, #generated=3586018, seconds=966.221, #generated/second=3711.39
+| Starting Depth | Move | Value | #Expanded | #Generated | Seconds | #Generated/Second |
+| -------------- | ---- | ----- | --------- | ---------- | ------- | ----------------- |
+| 34 | White moves | -4 | 0 | 1 | 1.00001e-06 | 999992 |
+| 33 | Black moves | -4 | 1 | 2 | 1.00001e-06 | 1.99998e+06 |
+| 32 | White moves | -4 | 4 | 3 | 2.00002e-06 | 1.49999e+06 |
+| 31 | Black moves | -4 | 4 | 4 | 2.00002e-06 | 1.99998e+06 |
+| 30 | White moves | -4 | 15 | 11 | 5.00004e-06 | 2.19998e+06 |
+| 29 | Black moves | -4 | 16 | 12 | 4.00003e-06 | 2.99998e+06 |
+| 28 | White moves | -4 | 27 | 13 | 7.99994e-06 | 1.62501e+06 |
+| 27 | Black moves | -4 | 73 | 14 | 2e-05 | 699999 |
+| 26 | White moves | -4 | 343 | 52 | 9.4e-05 | 553191 |
+| 25 | Black moves | -4 | 1548 | 192 | 0.000399 | 481203 |
+| 24 | White moves | -4 | 2302 | 249 | 0.00059 | 422034 |
+| 23 | Black moves | -4 | 3650 | 306 | 0.001014 | 301775 |
+| 22 | White moves | -4 | 11601 | 727 | 0.003146 | 231087 |
+| 21 | Black moves | -4 | 48013 | 1909 | 0.013593 | 140440 |
+| 20 | White moves | -4 | 78294 | 2250 | 0.021392 | 105180 |
+| 19 | Black moves | -4 | 178362 | 2692 | 0.048528 | 55473.1 |
+| 18 | White moves | -4 | 573183 | 6294 | 0.158203 | 39784.3 |
+| 17 | Black moves | -4 | 1049780 | 7155 | 0.285375 | 25072.3 |
+| 16 | White moves | -4 | 7198650 | 43606 | 1.95618 | 22291.3 |
+| 15 | Black moves | -4 | 27913174 | 91903 | 7.39237 | 12432.1 |
+| 14 | White moves | -4 | 67478633 | 136919 | 17.5808 | 7787.98 |
+| 13 | Black moves | -4 | 252021206 | 295252 | 63.552 | 4645.83 |
+| 12 | White moves | -4 | 645683085 | 888835 | 165.241 | 5379.02 |
+| 11 | Black moves | -4 | 3747761699 | 3586018 | 966.221 | 3711.39 |
