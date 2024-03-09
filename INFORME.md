@@ -8,5 +8,5 @@
 
 * Conclusiones
 
-  Podemos observar que el algoritmo que tuvo mejor rendimiento (menos scout por implementacion incorrecta) fue negascout, puesto que fue el que logró llegar mas cerca a la configuración inicial en menor tiempo que el resto; esto gracias a que pudo revisar una menor cantidad de nodos (ramas) que negamax y negamax ab, disminuyendo en gran medida la cantidad de nodos relevantes a evaluar.
+  Podemos observar que el algoritmo que tuvo mejor rendimiento (menos scout por implementacion incorrecta) fue negascout, puesto que fue el que logró llegar mas cerca a la configuración inicial en menor tiempo que el resto; esto gracias a que pudo revisar una menor cantidad de nodos (ramas) que negamax y negamax ab, disminuyendo en gran medida la cantidad de nodos relevantes a evaluar. Cabe aclarar que ningun algoritmo logró llegar al estado inicial en una cantidad de tiempo razonable, pero viendo los patrones podemos decir que lograran llegar.
   
