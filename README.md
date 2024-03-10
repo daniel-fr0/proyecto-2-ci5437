@@ -1,3 +1,6 @@
+# [Informe](INFORME.md)
+Se puede encontrar un breve informe en el archivo `INFORME.md` en el cual se detallan las decisiones tomadas y los resultados obtenidos.
+
 # Objetivo
 
 El objetivo del proyecto es aprender sobre el modelo de árboles de juego
